@@ -1,0 +1,49 @@
+CREATE DATABASE cogniance_sql_task_db;
+
+CREATE TABLE cogniance_sql_task_db.qa_salary
+(
+Employe CHAR(20),
+Hours SMALLINT,
+Salary SMALLINT,
+Bonus SMALLINT
+);
+
+CREATE TABLE cogniance_sql_task_db.dev_salary
+(
+Employe CHAR(20),
+Hours SMALLINT,
+Salary SMALLINT,
+Bonus SMALLINT
+);
+
+CREATE TABLE cogniance_sql_task_db.events
+(
+Even CHAR(20),
+Cost SMALLINT
+);
+
+INSERT INTO cogniance_sql_task_db.qa_salary
+VALUES ('Gordon', '160', '600', '100'), ('Mark', '160', '400', '0'), ('Sid', '160', '300', '100');
+
+INSERT INTO cogniance_sql_task_db.dev_salary
+VALUES ('Sam', '160', '600', '60'), ('Zac', '100', '400', '0'), ('Dana', '160', '300', '100'), ('Sid', '20', '80', '40');
+
+INSERT INTO cogniance_sql_task_db.events
+VALUES ('Oktoberfest', '2000'), ('NY Holidays', '4000'), ('St. Valentine''s Day', '1000'), ('Anniversary', '3000');
+
+SELECT * FROM cogniance_sql_task_db.events;
+
+SELECT Employe, sum(Total) as 'Total Earned'
+FROM
+((SELECT cogniance_sql_task_db.qa_salary.Employe, (SELECT SUM(cogniance_sql_task_db.qa_salary.Salary) + SUM(cogniance_sql_task_db.qa_salary.Bonus)) as Total
+FROM cogniance_sql_task_db.qa_salary
+GROUP BY Employe)
+UNION
+(SELECT cogniance_sql_task_db.dev_salary.Employe, (SELECT SUM(cogniance_sql_task_db.dev_salary.Salary) + SUM(cogniance_sql_task_db.dev_salary.Bonus)) as Total
+FROM cogniance_sql_task_db.dev_salary
+GROUP BY Employe)) as UN
+GROUP BY Employe
+ORDER BY sum(Total) DESC;
+
+SELECT count(Employe) as 'Number of Dev. Employees', (Select sum(Salary) + sum(Bonus)) as 'Total  Dev. Dpt. Costs'
+FROM cogniance_sql_task_db.dev_salary;
